@@ -5,6 +5,6 @@ steps:
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'gcr.io/clouddeveloper-299318/bitbucket.org/sachindramaharjan/service/web-project:$SHORT_SHA']
 - name: 'gcr.io/cloud-builders/gcloud'
-  args: ['run', 'deploy', 'web-project', '--region=central1', 'platform=--managed', '--image=gcr.io/clouddeveloper-299318/bitbucket.org/sachindramaharjan/service/web-project:$SHORT_SHA']
+  args: ['run', 'deploy', 'web-project', '--region=central1', '--platform=managed', '--image=gcr.io/clouddeveloper-299318/bitbucket.org/sachindramaharjan/service/web-project:$SHORT_SHA']
 
   
