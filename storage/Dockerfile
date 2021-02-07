@@ -5,6 +5,9 @@ ADD . /app
 
 WORKDIR /app
 
+## Add this go mod download command to pull in any dependencies
+RUN go mod download
+
 RUN go build -o storage
 
 CMD [ "/app/storage" ]

@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/storage"
@@ -72,6 +73,7 @@ func deleteBucket(w http.ResponseWriter, r *http.Request) {
 func uploadFile(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	bucketName := vars["bucketName"]
+	objectName := r.URL.Query().Get("object")
 	var message = "File uploaded"
 
 	//Parse multipart form, 10 << 20 specific maximum size of 10 MB
@@ -94,7 +96,12 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = uploadObject(fileBytes, bucketName, handler.Filename)
+	object := handler.Filename
+	if len(strings.TrimSpace(object)) {
+		object = objectName + "/" + handler.Filename
+	}
+
+	err = uploadObject(fileBytes, bucketName, object)
 	if err != nil {
 		json.NewEncoder(w).Encode(Response{BucketName: bucketName, Message: err.Error()})
 		return
