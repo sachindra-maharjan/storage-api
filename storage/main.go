@@ -97,7 +97,7 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	object := handler.Filename
-	if len(strings.TrimSpace(object)) != 0 {
+	if len(strings.TrimSpace(objectName)) != 0 {
 		object = objectName + "/" + handler.Filename
 	}
 
