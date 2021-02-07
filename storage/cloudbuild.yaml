@@ -1,7 +1,7 @@
 steps:
 - name: 'gcr.io/cloud-builders/docker'
   args: ['build', '-t', 'gcr.io/clouddeveloper-299318/bitbucket.org/sachindramaharjan/service/storage:$SHORT_SHA', '.']
-  dir: 'web'
+  dir: 'storage'
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'gcr.io/clouddeveloper-299318/bitbucket.org/sachindramaharjan/service/storage:$SHORT_SHA']
 - name: 'gcr.io/cloud-builders/gcloud'
