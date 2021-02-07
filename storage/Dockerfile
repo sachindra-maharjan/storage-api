@@ -5,6 +5,6 @@ ADD . /app
 
 WORKDIR /app
 
-RUN go run build -o storage
+RUN go build -o storage
 
 CMD [ "/app/storage" ]
