@@ -8,6 +8,6 @@ WORKDIR /app
 ## Add this go mod download command to pull in any dependencies
 RUN go mod download
 
-RUN go build -o datasync
+RUN go build -o datasync-service cmd/start/main.go
 
 CMD [ "/app/datasync" ]
