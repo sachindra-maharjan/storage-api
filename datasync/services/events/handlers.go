@@ -2,7 +2,7 @@ package events
 
 import (
 	"context"
-	"datasync/services/events/data"
+	"datasync/services/events/data/source"
 	"encoding/json"
 	"net/http"
 	"strconv"
@@ -24,7 +24,7 @@ func status(w http.ResponseWriter, r *http.Request) {
 func standings(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		leagueId := vars["leagueId"]
-		client := data.NewClient(nil, []string{"U4y3LniAIdmsh1SryySGibO7k8ELp1syFPvjsnpHOQNWAvpJAk"});
+		client := source.NewClient(nil, []string{"U4y3LniAIdmsh1SryySGibO7k8ELp1syFPvjsnpHOQNWAvpJAk"});
 		id, err := strconv.Atoi(leagueId);
 		if err != nil {
 			json.NewEncoder(w).Encode(err)
