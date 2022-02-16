@@ -10,7 +10,7 @@ import (
 type StandingService service
 
 //StandingResult contins the parsed result of api response of standings
-type StandingResult struct {
+type StandingEntity struct {
 	API struct {
 		Results   int           `json:"results,omitempty"`
 		Standings [][]Standings `json:"standings,omitempty"`
@@ -47,24 +47,24 @@ type Stat struct {
 }
 
 //GetLeagueStandings service retuns the current league standings
-func (service *StandingService) GetLeagueStandings(ctx context.Context, leagueID int) (*StandingResult, *Response, error) {
+func (service *StandingService) GetLeagueStandings(ctx context.Context, leagueID int) (*StandingEntity, error) {
 	req, err := service.client.NewRequest("GET", "leagueTable/"+fmt.Sprint(leagueID), nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
-	var standingResult *StandingResult
+	var standingEntity *StandingEntity
 
-	res, err := service.client.Do(ctx, req, &standingResult)
+	_, err = service.client.Do(ctx, req, &standingEntity)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
-	standingResult.API.LeagueID = leagueID
-	return standingResult, res, err
+	standingEntity.API.LeagueID = leagueID
+	return standingEntity, err
 }
 
 //Converts result into a flat data
-func (service *StandingService) Convert(result *StandingResult, includeHead bool) ([][]string, error) {
+func (service *StandingService) Convert(result *StandingEntity, includeHead bool) ([][]string, error) {
 	if result == nil {
 		return nil, fmt.Errorf("invalid standing data")
 	}

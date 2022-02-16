@@ -1,7 +1,8 @@
-package database
+package store
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -70,6 +71,6 @@ func parseDate(format string, val string) time.Time {
 	return mydate.UTC()
 }
 
-func DocWithIDAndName(id, name string) string {
-	return id + "#" + strings.ToUpper(name)
+func DocWithIDAndName(id int, name string) string {
+	return fmt.Sprintf("%d#%s", id, strings.ToUpper(name))
 }

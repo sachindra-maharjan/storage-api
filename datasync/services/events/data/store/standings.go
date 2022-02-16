@@ -1,8 +1,11 @@
-package database
+package store
 
 import (
 	"context"
-	"fmt"
+	"datasync/services/events/data/source"
+	"strconv"
+
+	"cloud.google.com/go/firestore"
 )
 
 type StandingsService dbservice
@@ -36,57 +39,41 @@ type Stat struct {
 	GoalsAgainst int `firestore:"goalsAgainst,omitempty"`
 }
 
-func (service *StandingsService) Add(ctx context.Context, leagueName string, records [][]string) error {
-	fmt.Printf("Adding %d new data to firestore \n", len(records))
-
+func (service *StandingsService) Set(ctx context.Context, leagueName string, entity *source.StandingEntity) error {
 	batch := service.client.fs.Batch()
-
-	for _, r := range records {
-
+	
+	for _, standings := range entity.API.Standings[0] {
 		s := Standings{}
-		s.LeagueID = parseInt(r[0])
-		s.Rank = parseInt(r[1])
-		s.TeamID = parseInt(r[2])
-		s.TeamName = r[3]
-		s.Logo = r[4]
-		s.Group = r[5]
-		s.Status = r[6]
-		s.Form = r[7]
-		s.Description = r[8]
-		s.AllStat.MatchsPlayed = parseInt(r[9])
-		s.AllStat.Win = parseInt(r[10])
-		s.AllStat.Lose = parseInt(r[11])
-		s.AllStat.Draw = parseInt(r[12])
-		s.AllStat.GoalsFor = parseInt(r[13])
-		s.AllStat.GoalsAgainst = parseInt(r[14])
-		s.HomeStat.MatchsPlayed = parseInt(r[15])
-		s.HomeStat.Win = parseInt(r[16])
-		s.HomeStat.Lose = parseInt(r[17])
-		s.HomeStat.Draw = parseInt(r[18])
-		s.HomeStat.GoalsFor = parseInt(r[19])
-		s.HomeStat.GoalsAgainst = parseInt(r[20])
-		s.AwayStat.MatchsPlayed = parseInt(r[21])
-		s.AwayStat.Win = parseInt(r[22])
-		s.AwayStat.Lose = parseInt(r[23])
-		s.AwayStat.Draw = parseInt(r[24])
-		s.AwayStat.GoalsFor = parseInt(r[25])
-		s.AwayStat.GoalsAgainst = parseInt(r[26])
-		leagueRef := service.client.fs.Collection("football").Doc(leagueName)
+		s.LeagueID = entity.API.LeagueID
+		s.TeamID = standings.TeamID
+		s.Rank = standings.Rank
+		s.TeamName = standings.TeamName
+		s.Logo  = standings.Logo
+		s.Group = standings.Group
+		s.Description = standings.Description
+		s.Status = standings.Status
+		s.Form = standings.Form
+		s.AllStat.Draw = standings.AllStat.Draw
+		s.AllStat.GoalsAgainst = standings.AllStat.GoalsAgainst
+		s.AllStat.GoalsFor = standings.AllStat.GoalsFor
+		s.AllStat.Lose = standings.AllStat.Lose
+		s.AllStat.MatchsPlayed = standings.AllStat.MatchsPlayed
+		s.AllStat.Win = standings.AllStat.Win
+		s.HomeStat = Stat(standings.HomeStat)
+		s.AwayStat = Stat(standings.AwayStat)
+		s.GoalsDiff = standings.GoalsDiff
+		s.Points = standings.Points
+		s.LastUpdated = standings.LastUpdated
 
+		leagueRef := service.client.fs.Collection("football").Doc(leagueName)
 		docRef := leagueRef.
 			Collection("leagues").
-			Doc("leagueId_" + r[0]).
+			Doc("leagueId_" + strconv.Itoa(entity.API.LeagueID)).
 			Collection("standings").
-			Doc(DocWithIDAndName(r[2], r[3]))
+			Doc(DocWithIDAndName(s.TeamID, s.TeamName))
 
-		batch.Set(docRef, s)
+		batch.Set(docRef, s, firestore.MergeAll)
 	}
 
-	_, err := batch.Commit(ctx)
-
-	if err != nil {
-		fmt.Println("Error occurred when commiting batch.", err)
-	}
-
-	return err
+	return nil
 }
