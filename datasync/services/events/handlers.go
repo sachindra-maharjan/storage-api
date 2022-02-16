@@ -44,8 +44,12 @@ func standings(w http.ResponseWriter, r *http.Request) {
 		}
 
 		err = fsClient.StandingsService.Set(context.Background(), "premierleague", result)
+		if err != nil {
+			writeError(w, err)
+			return
+		}
 		
-		json.NewEncoder(w).Encode(result)
+		json.NewEncoder(w).Encode("Records updated.")
 }
 
 func writeError(w http.ResponseWriter, err error) {
