@@ -45,7 +45,6 @@ func standings(w http.ResponseWriter, r *http.Request) {
 
 		err = fsClient.StandingsService.Set(context.Background(), "premierleague", result)
 		
-
 		json.NewEncoder(w).Encode(result)
 }
 

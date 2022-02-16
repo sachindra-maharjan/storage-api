@@ -75,5 +75,11 @@ func (service *StandingsService) Set(ctx context.Context, leagueName string, ent
 		batch.Set(docRef, s, firestore.MergeAll)
 	}
 
+	_, err := batch.Commit(ctx)
+	
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
