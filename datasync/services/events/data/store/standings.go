@@ -3,9 +3,8 @@ package store
 import (
 	"context"
 	"datasync/services/events/data/source"
+	"log"
 	"strconv"
-
-	"cloud.google.com/go/firestore"
 )
 
 type StandingsService dbservice
@@ -71,8 +70,8 @@ func (service *StandingsService) Set(ctx context.Context, leagueName string, ent
 			Doc("leagueId_" + strconv.Itoa(entity.API.LeagueID)).
 			Collection("standings").
 			Doc(DocWithIDAndName(s.TeamID, s.TeamName))
-
-		batch.Set(docRef, s, firestore.MergeAll)
+		log.Println("Document Ref: " + docRef.Path)
+		batch.Set(docRef, s)
 	}
 
 	_, err := batch.Commit(ctx)
